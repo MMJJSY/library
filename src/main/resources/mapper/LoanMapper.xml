@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dw.librarysystem.mapper.LoanMapper">
+    <resultMap id="LoanBook" type="Loan">
+        <id property="loanId" column="loan_id"/>
+        <result property="loanDate" column="loan_date"/>
+        <result property="dueDate" column="due_date"/>
+        <result property="returnDate" column="return_date"/>
+        <result property="status" column="status"/>
+        <result property="fineAmount" column="fine_amount"/>
+        <result property="createdAt" column="created_at"/>
+
+        <association property="member" javaType="Member">
+            <id property="memberId" column="member_id"/>
+            <result property="email" column="email"/>
+            <result property="name" column="name"/>
+            <result property="phone" column="phone"/>
+            <result property="memberType" column="member_type"/>
+        </association>
+        <association property= "book" javaType="Book">
+            <id property="bookId" column="book_id"/>
+            <result property="isbn" column="isbn"/>
+            <result property="title" column="title"/>
+            <result property="author" column="author"/>
+            <result property="publisher" column="publisher"/>
+            <result property="category" column="category"/>
+            <result property="totalQuantity" column="total_quantity"/>
+            <result property="availableQuantity" column="available_quantity"/>
+            <result property="location" column="location"/>
+        </association>
+    </resultMap>
+
+    <select id="getLoanByMemberAndBook" resultMap="LoanBook">
+        select l.loan_id, l.member_id, l.book_id, l.loan_date, l.due_date, l.return_date, l.status, l.fine_amount, l.created_at
+        from loan l
+        join member m on l.member_id = m.member_id
+        join book b on l.book_id = b.book_id
+        where l.member_id = #{memberId} and l.book_id = #{bookId}
+        order by loan_date desc limit 1
+    </select>
+
+    <select id="getLoanById" resultMap="LoanBook">
+        select l.loan_id, l.member_id, l.book_id, l.loan_date, l.due_date, l.return_date, l.status, l.fine_amount, l.created_at
+        from loan l
+        join member m on l.member_id = m.member_id
+        join book b on l.book_id = b.book_id
+        where l.loan_id = #{loanId}
+    </select>
+
+    <select id="getLoanByMemberId" resultMap="LoanBook">
+        select l.loan_id, l.member_id, l.book_id, l.loan_date, l.due_date, l.return_date, l.status, l.fine_amount, l.created_at
+        from loan l
+        join member m on l.member_id = m.member_id
+        join book b on l.book_id = b.book_id
+        where l.member_id = #{memberId}
+
+    </select>
+
+    <insert id="loanBook" useGeneratedKeys="true" keyProperty="loanId">
+        insert into loan (member_id, book_id, due_date, return_date, fine_amount)
+        values (
+        #{loan.member.memberId},
+        #{loan.book.bookId},
+        #{loan.dueDate},
+        #{loan.returnDate},
+        #{loan.fineAmount}
+        )
+    </insert>
+
+    <select id="getLoanListAndSearch" resultMap="LoanBook">
+        select l.loan_id, l.member_id, l.book_id, l.loan_date, l.due_date, l.return_date, l.status, l.fine_amount, l.created_at,
+        m.name, b.title 
+        from loan l
+        join member m on l.member_id = m.member_id
+        join book b on l.book_id = b.book_id
+        <where>
+            <if test="memberId != null ">
+                and l.member_id = #{memberId}
+            </if>
+            <if test="status != null">
+                and l.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="returnLoan">
+        update loan
+        set
+        return_date = #{loan.returnDate},
+        status = #{loan.status}
+        where loan_id = #{loan.loanId}
+    </update>
+
+    <update id="overdueStatus">
+        update loan
+        set
+        status = #{loan.status},
+        fine_amount = #{loan.fineAmount}
+        where loan_id = #{loan.loanId}
+    </update>
+    
+    <select id="overdueLoan" resultMap="LoanBook">
+        select l.loan_id, l.member_id, l.book_id, l.loan_date, l.due_date, l.return_date, l.status, l.fine_amount, l.created_at,
+        m.name, b.title
+        from loan l
+        join member m on l.member_id = m.member_id
+        join book b on l.book_id = b.book_id
+        where curdate() > due_date
+    </select>
+
+</mapper>

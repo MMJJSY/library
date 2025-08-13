@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dw.librarysystem.mapper.BookMapper">
+
+    <select id="getBookByIsbn" resultType="Book">
+        select book_id, isbn, title, author, publisher, publication_year, category, total_quantity,
+        available_quantity, location, created_at
+        from book
+        where isbn = #{isbn}
+    </select>
+
+    <select id="getBookById" resultType="Book">
+        select book_id, isbn, title, author, publisher, publication_year, category, total_quantity,
+        available_quantity, location, created_at
+        from book
+        where book_id = #{bookId}
+    </select>
+
+    <select id="getAllBooksAndSearch" resultType="Book">
+        select book_id, isbn, title, author, publisher, publication_year, category, total_quantity,
+        available_quantity, location, created_at
+        from book
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (title like concat('%', #{keyword}, '%') or
+                author like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="category != null">
+                and category = #{category}
+            </if>
+        </where>
+        order by book_id
+        limit #{limit} offset #{offset}
+    </select>
+    
+    <insert id="saveBook" useGeneratedKeys="true" keyProperty="bookId">
+        insert into book (
+        isbn,
+        title,
+        author,
+        publisher,
+        publication_year,
+        category,
+        total_quantity,
+        available_quantity,
+        location
+        ) values (
+        #{book.isbn},
+        #{book.title},
+        #{book.author},
+        #{book.publisher},
+        #{book.publicationYear},
+        #{book.category},
+        #{book.totalQuantity},
+        #{book.availableQuantity},
+        #{book.location}
+        )
+    </insert>
+
+    <update id="updateBook">
+        update book
+        set
+        total_quantity = #{book.totalQuantity},
+        available_quantity = #{book.availableQuantity}
+        where book_id = #{book.bookId}
+    </update>
+
+    <update id="updateAvailableQuantity">
+        update book
+        set
+        available_quantity = #{book.availableQuantity}
+        where book_id = #{book.bookId}
+    </update>
+
+    <delete id="deleteBook">
+        delete from book where book_id = #{bookId}
+    </delete>
+    
+</mapper>
+
+    
+
+    
+        
+
+
