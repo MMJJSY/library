@@ -11,5 +11,5 @@ public interface ReservationMapper {
     void reservationBook(@Param("reservation") Reservation reservation);
     List<Reservation> reservationByBookId(Long bookId);
     void reservationDate(@Param("reservation") Reservation reservation);
-
+    Reservation reservationByBookIdWithQueuePosition(@Param("bookId")Long bookId);
 }

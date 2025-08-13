@@ -1,6 +1,8 @@
 package dw.librarysystem.service;
 
 import dw.librarysystem.dto.ReservationInfoDto;
+import dw.librarysystem.exception.InvalidRequestException;
+import dw.librarysystem.mapper.BookMapper;
 import dw.librarysystem.mapper.ReservationMapper;
 import dw.librarysystem.model.Book;
 import dw.librarysystem.model.Member;
@@ -14,28 +16,31 @@ import java.util.List;
 public class ReservationService {
     @Autowired
     ReservationMapper reservationMapper;
+    @Autowired
+    BookMapper bookMapper;
 
     public ReservationInfoDto reservationBook(Long memberId,
                                               Long bookId) {
+        Book book = bookMapper.getBookById(bookId);
+        if (book.getAvailableQuantity() != 0) {
+            throw new InvalidRequestException("재고가 남아있습니다. 대출을 이용해주세요");
+        }
 
-        int queuePosition;
-        List<Reservation> reservationList = reservationMapper.reservationByBookId(bookId);
-        queuePosition = reservationList.size() + 1;
+            int queuePosition;
+            List<Reservation> reservationList = reservationMapper.reservationByBookId(bookId);
+            queuePosition = reservationList.size() + 1;
 
-        Reservation reservation = new Reservation();
-        Member member = new Member();
-        member.setMemberId(memberId);
-        reservation.setMember(member);
+            Reservation reservation = new Reservation();
+            Member member = new Member();
+            member.setMemberId(memberId);
+            reservation.setMember(member);
 
-        Book book = new Book();
-        book.setBookId(bookId);
-        reservation.setBook(book);
-        reservation.setQueuePosition(queuePosition);
+            reservation.setBook(book);
+            reservation.setQueuePosition(queuePosition);
 
-        reservationMapper.reservationBook(reservation);
+            reservationMapper.reservationBook(reservation);
 
 
-        return new ReservationInfoDto(memberId, queuePosition);
-
-    }
+            return new ReservationInfoDto(memberId, queuePosition);
+        }
 }

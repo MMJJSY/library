@@ -2,6 +2,7 @@ package dw.librarysystem.service;
 
 import dw.librarysystem.dto.*;
 import dw.librarysystem.enums.Status;
+import dw.librarysystem.enums.StatusR;
 import dw.librarysystem.exception.InvalidRequestException;
 import dw.librarysystem.mapper.BookMapper;
 import dw.librarysystem.mapper.LoanMapper;
@@ -94,9 +95,13 @@ public class LoanService {
     }
 
     @Transactional
-    public String returnLoan(Long longId) {
+    public String returnLoan(Long loanId) {
 
-        Loan loan = loanMapper.getLoanById(longId);
+
+        Loan loan = loanMapper.getLoanById(loanId);
+        if (loan == null) {
+            throw new InvalidRequestException("존재하지 않는 대출 기록입니다. loanId : "+loanId);
+        }
         loan.setReturnDate(Date.valueOf(LocalDate.now()));
         loan.setStatus(Status.RETURNED);
 
@@ -104,17 +109,12 @@ public class LoanService {
         if (updateRow == 0) {
             throw new InvalidRequestException("반납 실패");
         }
-        List<Reservation> reservationList = reservationMapper.reservationByBookId(loan.getBook().getBookId());
-        if (reservationList != null) {
-            for (Reservation reservation : reservationList) {
-                if (reservation.getQueuePosition() == 1) {
-                    reservation.setReservationDate(LocalDate.now());
-                    reservation.setExpiryDate(LocalDate.now().plusDays(3));
-                    reservationMapper.reservationDate(reservation);
-                    break;
-                }
-            }
-        }
+        Reservation reservation = reservationMapper.reservationByBookIdWithQueuePosition(loan.getBook().getBookId());
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setExpiryDate(LocalDate.now().plusDays(3));
+        reservation.setStatus(StatusR.ACTIVE);
+        reservationMapper.reservationDate(reservation);
+
         return ("도서가 반납되었습니다.");
 
     }
