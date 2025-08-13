@@ -13,6 +13,4 @@ import java.time.LocalDate;
 public class ReservationInfoDto {
     private Long reservationId;
     private int queuePosition;
-    private LocalDate reservationDate;
-    private LocalDate expiryDate;
 }

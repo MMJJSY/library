@@ -47,18 +47,23 @@
         join book b on r.book_id = b.book_id
         where r.book_id = #{bookId}
     </select>
-    <update id="reservationBook" useGeneratedKeys="true" keyProperty="reservation_id">
+    <update id="reservationBook" useGeneratedKeys="true" keyProperty="reservationId">
         insert into reservation (
-        member_id, book_id, reservation_date, expiry_date, queue_position
+        member_id, book_id, queue_position
         ) values (
-        #{memberId},
-        #{bookId},
-        #{reservationDate},
-        #{expiryDate},
-        #{queuePosition}
+        #{reservation.member.memberId},
+        #{reservation.book.bookId},
+        #{reservation.queuePosition}
         )
-
-
+    </update>
+    
+    <update id="reservationDate">
+        update
+        reservation
+        set
+        reservation_date = #{reservation.reservationDate},
+        expiry_date = #{reservation.expiryDate}
+        where book_id = #{reservation.book.bookId} and queue_position = 1
     </update>
 </mapper>
     

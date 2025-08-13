@@ -5,9 +5,11 @@ import dw.librarysystem.enums.Status;
 import dw.librarysystem.exception.InvalidRequestException;
 import dw.librarysystem.mapper.BookMapper;
 import dw.librarysystem.mapper.LoanMapper;
+import dw.librarysystem.mapper.ReservationMapper;
 import dw.librarysystem.model.Book;
 import dw.librarysystem.model.Loan;
 import dw.librarysystem.model.Member;
+import dw.librarysystem.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ public class LoanService {
     LoanMapper loanMapper;
     @Autowired
     BookMapper bookMapper;
+    @Autowired
+    ReservationMapper reservationMapper;
 
     @Transactional
     public LoanBookDto loanBook(Long memberId,
@@ -100,7 +104,19 @@ public class LoanService {
         if (updateRow == 0) {
             throw new InvalidRequestException("반납 실패");
         }
+        List<Reservation> reservationList = reservationMapper.reservationByBookId(loan.getBook().getBookId());
+        if (reservationList != null) {
+            for (Reservation reservation : reservationList) {
+                if (reservation.getQueuePosition() == 1) {
+                    reservation.setReservationDate(LocalDate.now());
+                    reservation.setExpiryDate(LocalDate.now().plusDays(3));
+                    reservationMapper.reservationDate(reservation);
+                    break;
+                }
+            }
+        }
         return ("도서가 반납되었습니다.");
+
     }
 
     @Transactional

@@ -16,7 +16,7 @@ public class Reservation {
     private Member member;
     private Book book;
     private LocalDate reservationDate;
-    private LocalDate expiry_date;
+    private LocalDate expiryDate;
     private StatusR status;
     private int queuePosition;
     private Timestamp createdAt;

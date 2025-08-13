@@ -35,6 +35,7 @@ public class ReservationService {
         reservationMapper.reservationBook(reservation);
 
 
-        return null;
+        return new ReservationInfoDto(memberId, queuePosition);
+
     }
 }
