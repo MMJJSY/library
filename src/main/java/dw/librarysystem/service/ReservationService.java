@@ -1,10 +1,13 @@
 package dw.librarysystem.service;
 
 import dw.librarysystem.dto.ReservationInfoDto;
+import dw.librarysystem.enums.Status;
 import dw.librarysystem.exception.InvalidRequestException;
 import dw.librarysystem.mapper.BookMapper;
+import dw.librarysystem.mapper.LoanMapper;
 import dw.librarysystem.mapper.ReservationMapper;
 import dw.librarysystem.model.Book;
+import dw.librarysystem.model.Loan;
 import dw.librarysystem.model.Member;
 import dw.librarysystem.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +21,20 @@ public class ReservationService {
     ReservationMapper reservationMapper;
     @Autowired
     BookMapper bookMapper;
+    @Autowired
+    LoanMapper loanMapper;
 
     public ReservationInfoDto reservationBook(Long memberId,
                                               Long bookId) {
         Book book = bookMapper.getBookById(bookId);
         if (book.getAvailableQuantity() != 0) {
             throw new InvalidRequestException("재고가 남아있습니다. 대출을 이용해주세요");
+        }
+        List<Loan> overdueCheck = loanMapper.getLoanByMemberId(memberId);
+        for (Loan loan : overdueCheck) {
+            if (loan != null &&loan.getStatus() == Status.OVERDUE) {
+                throw new InvalidRequestException("연체 중에는 예약할 수 없습니다.");
+            }
         }
 
             int queuePosition;

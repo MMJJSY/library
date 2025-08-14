@@ -19,6 +19,7 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+    // Post 요청 (새로운 회원 등록)
     @PostMapping
     public ResponseEntity<MemberResponseDto> registerMember(@Valid @RequestBody MemberRegisterDto memberRegisterDto) {
         MemberResponseDto memberResponseDto = memberService.registerMember(memberRegisterDto);
@@ -26,7 +27,7 @@ public class MemberController {
                 HttpStatus.CREATED
         );
     }
-
+    // Get 요청 (모든 회원 조회)
     @GetMapping
     public ResponseEntity<List<MemberResponseDto>> getAllMembers (@RequestParam (defaultValue = "0") int page,
                                                                   @RequestParam (defaultValue = "10")int size) {
@@ -35,7 +36,7 @@ public class MemberController {
                 HttpStatus.OK
         );
     }
-
+    // Get 요청 (회원 ID로 회원 조회)
     @GetMapping("/{memberId}")
     public ResponseEntity<MemberInfoDto> getMemberById (@PathVariable long memberId) {
         return new ResponseEntity<>(
@@ -44,6 +45,7 @@ public class MemberController {
         );
     }
 
+    // Put 요청 (회원 정보 수정)
     @PutMapping("/{memberId}")
     public ResponseEntity<String> updateMember (@RequestBody MemberUpdateDto memberUpdateDto,
                                                 @PathVariable long memberId) {

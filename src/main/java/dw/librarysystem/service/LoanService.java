@@ -44,10 +44,17 @@ public class LoanService {
         if(bookMapper.getBookById(bookId).getAvailableQuantity() <= 0){
             throw new InvalidRequestException("현재 재고가 없으니 예약을 이용해주세요.");
         }
-        List<Loan> overdueCheck = loanMapper.getLoanByMemberId(memberId);
-        for (Loan loan : overdueCheck) {
+        List<Loan> loanList = loanMapper.getLoanByMemberId(memberId);
+        for (Loan loan : loanList) {
             if (loan.getStatus() == Status.OVERDUE ) {
                 throw new InvalidRequestException("연체중에는 다른 도서를 빌릴 수 없습니다");
+            }
+        }
+        List<Reservation> reservationList = reservationMapper.reservationByBookId(bookId);
+        for (Reservation reservation : reservationList) {
+            if (reservation != null && reservation.getStatus() == StatusR.ACTIVE &&
+                !reservation.getMember().getMemberId().equals(memberId)){
+                throw new InvalidRequestException("예약 중인 도서이므로 대출이 불가능 합니다.");
             }
         }
 
@@ -67,6 +74,12 @@ public class LoanService {
 
         book.setAvailableQuantity(book.getAvailableQuantity()-1);
         bookMapper.updateAvailableQuantity(book);
+
+//        Reservation reservation = reservationMapper.reservationByMemberIdAndBookId(memberId, bookId);
+//        if (reservation != null && reservation.getStatus() == StatusR.ACTIVE) {
+//            reservation.setStatus(StatusR.FULFILLED);
+//            reservationMapper.updateReservationStatus(reservation);
+//        }
 
 
         Loan savedLoan = loanMapper.getLoanByMemberAndBook(memberId, bookId);
@@ -109,14 +122,20 @@ public class LoanService {
         if (updateRow == 0) {
             throw new InvalidRequestException("반납 실패");
         }
+
+        Book book = bookMapper.getBookById(loan.getBook().getBookId());
+        book.setAvailableQuantity(book.getAvailableQuantity()+1);
+        bookMapper.updateAvailableQuantity(book);
+
         Reservation reservation = reservationMapper.reservationByBookIdWithQueuePosition(loan.getBook().getBookId());
-        reservation.setReservationDate(LocalDate.now());
-        reservation.setExpiryDate(LocalDate.now().plusDays(3));
-        reservation.setStatus(StatusR.ACTIVE);
-        reservationMapper.reservationDate(reservation);
+        if(reservation != null) {
+            reservation.setReservationDate(LocalDate.now());
+            reservation.setExpiryDate(LocalDate.now().plusDays(3));
+            reservation.setStatus(StatusR.ACTIVE);
+            reservationMapper.reservationDate(reservation);
+        }
 
         return ("도서가 반납되었습니다.");
-
     }
 
     @Transactional

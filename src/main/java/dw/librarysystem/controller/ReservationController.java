@@ -16,6 +16,7 @@ public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
+    // Post 요청 (도서 예약 정보를 저장)
     @PostMapping
     public ResponseEntity<ReservationInfoDto> reservationBook(@RequestParam Long memberId,
                                                               @RequestParam Long bookId){
