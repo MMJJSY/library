@@ -54,7 +54,7 @@ public class LoanService {
         for (Reservation reservation : reservationList) {
             if (reservation != null && reservation.getStatus() == StatusR.ACTIVE &&
                 !reservation.getMember().getMemberId().equals(memberId)){
-                throw new InvalidRequestException("예약 중인 도서이므로 대출이 불가능 합니다.");
+                throw new InvalidRequestException("예약 중인 도서이므로 대출이 불가능 합니다. 예약을 이용해주세요.");
             }
         }
 
