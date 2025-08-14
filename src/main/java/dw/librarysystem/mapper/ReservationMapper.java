@@ -9,10 +9,13 @@ import java.util.List;
 @Mapper
 public interface ReservationMapper {
     void reservationBook(@Param("reservation") Reservation reservation);
+    List<Reservation> getAllReservation(@Param("memberId") Long memberId,
+                                        @Param("bookId") Long bookId);
     List<Reservation> reservationByBookId(Long bookId);
     Reservation reservationByMemberIdAndBookId(Long memberId, Long bookId);
-    void reservationDate(@Param("reservation") Reservation reservation);
+    int reservationDate(@Param("reservation") Reservation reservation);
     Reservation reservationByBookIdWithQueuePosition(@Param("bookId")Long bookId);
-    void cancelledList (@Param("reservation")Reservation reservation);
+    List<Reservation> cancelledList ();
     void updateReservationStatus(@Param("reservation") Reservation reservation);
+
 }

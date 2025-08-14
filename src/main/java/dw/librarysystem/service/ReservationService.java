@@ -1,6 +1,7 @@
 package dw.librarysystem.service;
 
 import dw.librarysystem.dto.ReservationInfoDto;
+import dw.librarysystem.dto.ReservationListDto;
 import dw.librarysystem.enums.Status;
 import dw.librarysystem.exception.InvalidRequestException;
 import dw.librarysystem.mapper.BookMapper;
@@ -13,6 +14,7 @@ import dw.librarysystem.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,7 +53,15 @@ public class ReservationService {
 
             reservationMapper.reservationBook(reservation);
 
-
             return new ReservationInfoDto(memberId, queuePosition);
         }
+    public List<ReservationListDto> getAllReservation(Long memberId, Long bookId) {
+
+        List<ReservationListDto> reservationListDtoList = new ArrayList<>();
+        List<Reservation> reservationList = reservationMapper.getAllReservation(memberId, bookId);
+        for (Reservation reservation : reservationList) {
+            reservationListDtoList.add(reservation.toDto());
+        }
+        return reservationListDtoList;
+    }
 }

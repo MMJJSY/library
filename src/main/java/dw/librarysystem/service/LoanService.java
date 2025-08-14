@@ -74,6 +74,12 @@ public class LoanService {
 
         book.setAvailableQuantity(book.getAvailableQuantity()-1);
         bookMapper.updateAvailableQuantity(book);
+        
+        Reservation reservation = reservationMapper.reservationByMemberIdAndBookId(memberId, bookId);
+        if (reservation != null && reservation.getStatus() == StatusR.ACTIVE) {
+            reservation.setStatus(StatusR.FULFILLED);
+            reservationMapper.updateReservationStatus(reservation);
+        }
 
 //        Reservation reservation = reservationMapper.reservationByMemberIdAndBookId(memberId, bookId);
 //        if (reservation != null && reservation.getStatus() == StatusR.ACTIVE) {
@@ -115,6 +121,9 @@ public class LoanService {
         if (loan == null) {
             throw new InvalidRequestException("존재하지 않는 대출 기록입니다. loanId : "+loanId);
         }
+        if (loan.getStatus() == Status.RETURNED) {
+            throw new InvalidRequestException("이미 반납한 기록이 있습니다. loanId : " + loanId);
+        }
         loan.setReturnDate(Date.valueOf(LocalDate.now()));
         loan.setStatus(Status.RETURNED);
 
@@ -128,10 +137,14 @@ public class LoanService {
         bookMapper.updateAvailableQuantity(book);
 
         Reservation reservation = reservationMapper.reservationByBookIdWithQueuePosition(loan.getBook().getBookId());
+        System.out.println(reservation);
+        System.out.println();
         if(reservation != null) {
             reservation.setReservationDate(LocalDate.now());
             reservation.setExpiryDate(LocalDate.now().plusDays(3));
             reservation.setStatus(StatusR.ACTIVE);
+            System.out.println(reservation);
+            System.out.println();
             reservationMapper.reservationDate(reservation);
         }
 

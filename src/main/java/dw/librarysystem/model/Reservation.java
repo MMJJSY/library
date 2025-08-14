@@ -1,5 +1,6 @@
 package dw.librarysystem.model;
 
+import dw.librarysystem.dto.ReservationListDto;
 import dw.librarysystem.enums.StatusR;
 import lombok.*;
 
@@ -21,4 +22,15 @@ public class Reservation {
     private int queuePosition;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+
+    public ReservationListDto toDto(){
+        return new ReservationListDto(
+                this.reservationId,
+                member.getName(),
+                book.getTitle(),
+                this.queuePosition,
+                this.reservationDate,
+                this.status
+        );
+    }
 }
