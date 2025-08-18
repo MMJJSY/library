@@ -1,5 +1,6 @@
 package dw.librarysystem.service;
 
+import dw.librarysystem.dto.StatisticMemberDto;
 import dw.librarysystem.dto.StatisticPopularDto;
 import dw.librarysystem.mapper.StatisticMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,5 +15,9 @@ public class StatisticService {
 
     public List<StatisticPopularDto> getBookByPopular(int limit) {
         return statisticMapper.getBookByPopular(limit);
+    }
+
+    public StatisticMemberDto getStatisticByMember(Long memberId) {
+        return statisticMapper.getStatisticByMember(memberId);
     }
 }

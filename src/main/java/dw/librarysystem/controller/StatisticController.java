@@ -1,15 +1,13 @@
 package dw.librarysystem.controller;
 
 
+import dw.librarysystem.dto.StatisticMemberDto;
 import dw.librarysystem.dto.StatisticPopularDto;
 import dw.librarysystem.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +23,16 @@ public class StatisticController {
     public ResponseEntity<List<StatisticPopularDto>> getBookByPopular(@RequestParam(defaultValue = "10") int limit){
         return new ResponseEntity<>(
                 statisticService.getBookByPopular(limit),
+                HttpStatus.OK
+        );
+    }
+
+    // GET 요청 (멤버별 대출 통계)
+    // URL : /statistics/member-loans/{memberId}
+    @GetMapping("/member-loans/{memberId}")
+    public ResponseEntity<StatisticMemberDto> getStatisticByMember(@PathVariable Long memberId){
+        return new ResponseEntity<>(
+                statisticService.getStatisticByMember(memberId),
                 HttpStatus.OK
         );
     }

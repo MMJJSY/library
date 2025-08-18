@@ -9,11 +9,39 @@
         <result property="loanCount" column="loan_count"/>
     </resultMap>
 
+    <resultMap id="MemberStatic" type="dw.librarysystem.dto.StatisticMemberDto">
+        <result property="totalLoans" column="total_loans"/>
+        <result property="currentLoans" column="current_loans"/>
+        <result property="overdueLoans" column="overdue_loans"/>
+        <result property="totalFines" column="total_fine"/>
+    </resultMap>
+
     <select id="getBookByPopular" resultMap="PopularBook">
         select l.book_id, b.title, b.author, count(*) as loan_count
         from loan l inner join book b on l.book_id = b.book_id
         group by l.book_id, b.title, b.author
         order by loan_count desc limit #{limit}
     </select>
+
+    <select id="getStatisticByMember" resultMap="MemberStatic">
+        select
+        count(*) as total_loans,
+        count(case when status in('ACTIVE', 'OVERDUE') then 1 END) as current_loans,
+        count(case when status = 'OVERDUE' then 1 END) as overdue_loans,
+        coalesce(sum(fine_amount),0) as total_fine
+        from loan
+        where member_id = #{memberId}
+<!--        select-->
+<!--        member_id,-->
+<!--        (select count(*) from loan where member_id = #{memberId}) as total_loans,-->
+<!--        (select count(*) from loan where member_id = #{memberId} and status in('ACTIVE','OVERDUE') ) as current_loans,-->
+<!--        (select count(*) from loan where status = 'OVERDUE' and member_id = #{memberId}) as overdue_loans,-->
+<!--        (select sum(fine_amount) from loan where member_id = #{memberId}) as total_fine-->
+<!--        from loan-->
+<!--        where member_id = #{memberId}-->
+<!--        group by member_id-->
+
+    </select>
 </mapper>
+
     
