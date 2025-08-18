@@ -13,6 +13,7 @@ import dw.librarysystem.model.Member;
 import dw.librarysystem.model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ReservationService {
     @Autowired
     LoanMapper loanMapper;
 
+    @Transactional
     public ReservationInfoDto reservationBook(Long memberId,
                                               Long bookId) {
         Book book = bookMapper.getBookById(bookId);
@@ -55,6 +57,8 @@ public class ReservationService {
 
             return new ReservationInfoDto(memberId, queuePosition);
         }
+
+    @Transactional
     public List<ReservationListDto> getAllReservation(Long memberId, Long bookId) {
 
         List<ReservationListDto> reservationListDtoList = new ArrayList<>();
@@ -65,6 +69,7 @@ public class ReservationService {
         return reservationListDtoList;
     }
 
+    @Transactional
     public String deleteReservation(Long reservationId) {
         int deleteRow = reservationMapper.deleteReservation(reservationId);
         if (deleteRow < 0) {

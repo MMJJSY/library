@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dw.librarysystem.mapper.StatisticMapper">
+    <resultMap id="PopularBook" type="dw.librarysystem.dto.StatisticPopularDto">
+        <result property="bookId" column="book_id"/>
+        <result property="title" column="title"/>
+        <result property="author" column="author"/>
+        <result property="loanCount" column="loan_count"/>
+    </resultMap>
+
+    <select id="getBookByPopular" resultMap="PopularBook">
+        select l.book_id, b.title, b.author, count(*) as loan_count
+        from loan l inner join book b on l.book_id = b.book_id
+        group by l.book_id, b.title, b.author
+        order by loan_count desc limit #{limit}
+    </select>
+</mapper>
+    
