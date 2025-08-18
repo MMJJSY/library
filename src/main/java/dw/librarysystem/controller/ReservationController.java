@@ -35,4 +35,14 @@ public class ReservationController {
                 HttpStatus.OK
         );
     }
+
+    // Delete 요청 (예약 취소)
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<String> deleteReservation(@PathVariable Long reservationId){
+        return new ResponseEntity<>(
+                reservationService.deleteReservation(reservationId),
+                HttpStatus.OK
+        );
+    }
+
 }

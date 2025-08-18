@@ -17,5 +17,6 @@ public interface ReservationMapper {
     Reservation reservationByBookIdWithQueuePosition(@Param("bookId")Long bookId);
     List<Reservation> cancelledList ();
     void updateReservationStatus(@Param("reservation") Reservation reservation);
+    int deleteReservation(@Param("reservationId")Long reservationId);
 
 }

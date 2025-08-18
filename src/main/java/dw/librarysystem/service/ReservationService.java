@@ -64,4 +64,12 @@ public class ReservationService {
         }
         return reservationListDtoList;
     }
+
+    public String deleteReservation(Long reservationId) {
+        int deleteRow = reservationMapper.deleteReservation(reservationId);
+        if (deleteRow < 0) {
+            return "예약 취소 실패";
+        }
+        return "예약이 취소되었습니다.";
+    }
 }

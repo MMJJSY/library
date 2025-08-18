@@ -153,6 +153,14 @@
         status = #{reservation.status}
         where member_id = #{reservation.member.memberId} and book_id = #{reservation.book.bookId}
     </update>
+
+    <update id="deleteReservation">
+        update
+        reservation
+        set
+        status = 'CANCELLED'
+        where reservation_id = #{reservationId}
+    </update>
 </mapper>
     
 
