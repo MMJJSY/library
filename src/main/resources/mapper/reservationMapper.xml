@@ -128,11 +128,12 @@
 
     <insert id="reservationBook" useGeneratedKeys="true" keyProperty="reservationId">
         insert into reservation (
-        member_id, book_id, status
+        member_id, book_id, status, queue_position
         ) values (
         #{reservation.member.memberId},
         #{reservation.book.bookId},
-        #{reservation.status}
+        #{reservation.status},
+        #{reservation.queuePosition}
         )
     </insert>
     

@@ -3,6 +3,7 @@ package dw.librarysystem.service;
 import dw.librarysystem.dto.ReservationInfoDto;
 import dw.librarysystem.dto.ReservationListDto;
 import dw.librarysystem.enums.Status;
+import dw.librarysystem.enums.StatusR;
 import dw.librarysystem.exception.InvalidRequestException;
 import dw.librarysystem.mapper.BookMapper;
 import dw.librarysystem.mapper.LoanMapper;
@@ -52,6 +53,7 @@ public class ReservationService {
 
             reservation.setBook(book);
             reservation.setQueuePosition(queuePosition);
+            reservation.setStatus(StatusR.WAITING);
 
             reservationMapper.reservationBook(reservation);
 
